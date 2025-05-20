@@ -19,8 +19,6 @@
     });
     if (!matches) return;
     
-    console.log("ANKI MATCHED!!!");
-
     let currentCard = null;
     let currentCardIdx = 0;
 
@@ -141,7 +139,6 @@
 
     const overlayElem = document.createElement("div");
     overlayElem.id = "AnkiPause__Overlay";
-    document.body.appendChild(overlayElem);
 
     const containerElem = document.createElement("div");
     overlayElem.appendChild(containerElem);
@@ -200,7 +197,6 @@
     let decks = await chrome.runtime.sendMessage({ type: "DECK_NAMES" });
     decks = decks.filter(name => settings.decks.hasOwnProperty(name));
     decks = decks.filter(name => settings.decks[name] == true);
-    console.log(decks);
 
     const deck = decks[Math.floor(Math.random() * decks.length)];
     await chrome.runtime.sendMessage(
@@ -215,8 +211,14 @@
         );
         await chrome.runtime.sendMessage({ type: "SHOW_QUESTION" });
         currentCard = card;
-        console.log(card);
-
+        if (currentCardIdx == 0 && card != null) {
+            document.body.appendChild(overlayElem);
+        } else if (card == null) {
+            if (currentCardIdx != 0)
+                overlayElem.remove();
+            return;
+        }
+        
         setFrameContent(currentCard.question);
 
         let buttons = [];
@@ -245,7 +247,6 @@
             }
             buttons.push(buttonElem);
         }
-        console.log(buttons);
         easeFooterElem.replaceChildren(...buttons);
     }
     loadNextCard();

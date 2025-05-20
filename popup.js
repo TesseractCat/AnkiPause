@@ -14,12 +14,6 @@ document.addEventListener('DOMContentLoaded', function() {
         saveSettings();
     });
     
-    // About link
-    aboutLink.addEventListener('click', function(e) {
-        e.preventDefault();
-        alert('AnkiPause: Study flashcards while browsing distracting websites.\n\nDeveloped to help you learn while managing your browsing habits.');
-    });
-    
     function addSiteInput(value = '') {
         const siteEntry = document.createElement('div');
         siteEntry.className = 'site-entry';
