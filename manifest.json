@@ -1,0 +1,43 @@
+{
+  "manifest_version": 3,
+  "name": "AnkiPause",
+  "version": "1.0.0",
+  "description": "Study Anki cards while browsing",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": ["http://127.0.0.1:8765/*"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content-script.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [ "icons/icon128.png" ],
+      "matches": [ "<all_urls>" ]
+    }
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{5cd33bb9-ae71-41e0-a866-b84a6be9dd75}"
+    }
+  }
+}
