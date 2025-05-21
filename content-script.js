@@ -267,6 +267,13 @@
     }
     loadNextCard();
 
+    // Reload cards on tab return
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+            loadNextCard();
+        }
+    });
+
     // Prompt user
     /*const selection = window.getSelection().toString() || document.title;
     const front = prompt('🧠 Anki — Front:', selection);
