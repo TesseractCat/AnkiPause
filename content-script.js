@@ -164,7 +164,6 @@
 
     async function setFrameContent(card, content) {
         let html = `
-        <!DOCTYPE html>
         <head>
             <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
         </head>
@@ -185,8 +184,8 @@
         html = doc.documentElement.outerHTML;
         // console.log(html);
 
-        const blob = new Blob([html], { type: 'text/html' });
-        const url  = URL.createObjectURL(blob);
+        const blob = new Blob([`<!DOCTYPE html>${html}`], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
         frame.src = url;
     }
 
