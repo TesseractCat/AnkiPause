@@ -207,30 +207,27 @@
     easeFooterElem.classList.add("answer");
     containerElem.appendChild(easeFooterElem);
 
-    const settings = await chrome.storage.sync.get({
-        patterns: [],
-        decks: {},
-        cardsPerPage: 1
-    });
-    let deckIds = await chrome.runtime.sendMessage({ type: "DECK_NAMES" });
-    let decks = Object.keys(deckIds);
-    decks = decks.filter(name => settings.decks.hasOwnProperty(name));
-    decks = decks.filter(name => settings.decks[name] == true);
-    let deckStats = await chrome.runtime.sendMessage({ type: "DECK_STATS", decks: decks });
-    decks = decks.filter(name => {
-        let stat = deckStats[deckIds[name]];
-        if (stat.new_count + stat.learn_count + stat.review_count > 0)
-            return true;
-        return false;
-    });
-    if (decks.length == 0) return;
+    async function loadDeck(settings) {
+        let deckIds = await chrome.runtime.sendMessage({ type: "DECK_NAMES" });
+        let decks = Object.keys(deckIds);
+        decks = decks.filter(name => settings.decks.hasOwnProperty(name));
+        decks = decks.filter(name => settings.decks[name] == true);
+        let deckStats = await chrome.runtime.sendMessage({ type: "DECK_STATS", decks: decks });
+        decks = decks.filter(name => {
+            let stat = deckStats[deckIds[name]];
+            if (stat.new_count + stat.learn_count + stat.review_count > 0)
+                return true;
+            return false;
+        });
+        if (decks.length == 0) return;
+    
+        const deck = decks[Math.floor(Math.random() * decks.length)];
+        await chrome.runtime.sendMessage(
+            { type: "REVIEW_DECK", deck: deck }
+        );
+    }
 
-    const deck = decks[Math.floor(Math.random() * decks.length)];
-    await chrome.runtime.sendMessage(
-        { type: "REVIEW_DECK", deck: deck }
-    );
-
-    async function loadNextCard() {
+    async function loadNextCard(settings) {
         overlayElem.classList.remove("answer");
 
         let card = await chrome.runtime.sendMessage(
@@ -269,7 +266,7 @@
                     overlayElem.remove();
                 } else {
                     easeFooterElem.replaceChildren();
-                    loadNextCard();
+                    loadNextCard(settings);
                 }
             });
             if (button == 1) {
@@ -281,12 +278,23 @@
         }
         easeFooterElem.replaceChildren(...buttons);
     }
-    loadNextCard();
+
+    const settings = await chrome.storage.sync.get({
+        patterns: [],
+        decks: {},
+        cardsPerPage: 1
+    });
+
+    if (document.visibilityState == 'visible') {
+        await loadDeck(settings);
+        await loadNextCard(settings);
+    }
 
     // Reload cards on tab return
-    document.addEventListener('visibilitychange', () => {
+    document.addEventListener('visibilitychange', async () => {
         if (document.visibilityState === 'visible') {
-            loadNextCard();
+            await loadDeck(settings);
+            await loadNextCard(settings);
         }
     });
 })();
