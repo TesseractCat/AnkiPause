@@ -212,19 +212,18 @@
         decks: {},
         cardsPerPage: 1
     });
-    let decks = await chrome.runtime.sendMessage({ type: "DECK_NAMES" });
+    let deckIds = await chrome.runtime.sendMessage({ type: "DECK_NAMES" });
+    let decks = Object.keys(deckIds);
     decks = decks.filter(name => settings.decks.hasOwnProperty(name));
     decks = decks.filter(name => settings.decks[name] == true);
     let deckStats = await chrome.runtime.sendMessage({ type: "DECK_STATS", decks: decks });
     decks = decks.filter(name => {
-        for (let stat of Object.values(deckStats)) {
-            if (stat.name == name) {
-                if (stat.new_count + stat.learn_count + stat.review_count > 0)
-                    return true;
-            }
-        }
+        let stat = deckStats[deckIds[name]];
+        if (stat.new_count + stat.learn_count + stat.review_count > 0)
+            return true;
         return false;
     });
+    if (decks.length == 0) return;
 
     const deck = decks[Math.floor(Math.random() * decks.length)];
     await chrome.runtime.sendMessage(
