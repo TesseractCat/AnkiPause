@@ -186,7 +186,10 @@
 
         const blob = new Blob([`<!DOCTYPE html>${html}`], { type: 'text/html' });
         const url = URL.createObjectURL(blob);
-        frame.src = url;
+        if (frame.src != "") {
+            URL.revokeObjectURL(frame.src);
+            frame.src = url;
+        }
     }
 
     const showAnswerFooterElem = document.createElement("footer");
@@ -229,6 +232,7 @@
 
     async function loadNextCard(settings) {
         overlayElem.classList.remove("answer");
+        frame.src = "";
 
         let card = await chrome.runtime.sendMessage(
             { type: "CURRENT_CARD" }
@@ -264,9 +268,10 @@
                 currentCardIdx += 1;
                 if (currentCardIdx == settings.cardsPerPage) {
                     overlayElem.remove();
+                    URL.revokeObjectURL(frame.src);
                 } else {
                     easeFooterElem.replaceChildren();
-                    loadNextCard(settings);
+                    await loadNextCard(settings);
                 }
             });
             if (button == 1) {
