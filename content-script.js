@@ -273,30 +273,4 @@
             loadNextCard();
         }
     });
-
-    // Prompt user
-    /*const selection = window.getSelection().toString() || document.title;
-    const front = prompt('🧠 Anki — Front:', selection);
-    if (!front) return;
-    const back  = prompt('🧠 Anki — Back:');
-    if (!back) return;
-
-    // Send to AnkiConnect
-    /*fetch('http://127.0.0.1:8765', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-            action: 'addNote',
-            version: 6,
-            params: {
-                note: {
-                    deckName: 'Default',
-                    modelName: 'Basic',
-                    fields: {Front: front, Back: back},
-                    options: {allowDuplicate: false},
-                    tags: []
-                }
-            }
-        })
-    }).catch(console.error);*/
 })();
