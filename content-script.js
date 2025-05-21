@@ -28,6 +28,8 @@
     #AnkiPause__Overlay * {
         all: unset !important;
         box-sizing: border-box !important;
+        font-family: tahoma !important;
+        font-size: initial !important;
     }
     #AnkiPause__Overlay::before,
     #AnkiPause__Overlay::after,
@@ -35,6 +37,8 @@
     #AnkiPause__Overlay *::after {
         all: unset !important;
         content: none !important;
+        font-family: initial !important;
+        font-size: initial !important;
     }
 
     #AnkiPause__Overlay {
@@ -63,10 +67,12 @@
 
     #AnkiPause__Overlay header {
         padding: 8px                 !important;
-        font-size: 1.5em                 !important;
-        font-weight: bold                 !important;
         align-items: center          !important;
         justify-content: center      !important;
+    }
+    #AnkiPause__Overlay header h1 {
+        font-size: 1.5em                 !important;
+        font-weight: bold                 !important;
     }
     #AnkiPause__Overlay footer {
         justify-content: stretch      !important;
@@ -197,6 +203,16 @@
     let decks = await chrome.runtime.sendMessage({ type: "DECK_NAMES" });
     decks = decks.filter(name => settings.decks.hasOwnProperty(name));
     decks = decks.filter(name => settings.decks[name] == true);
+    let deckStats = await chrome.runtime.sendMessage({ type: "DECK_STATS", decks: decks });
+    decks = decks.filter(name => {
+        for (let stat of Object.values(deckStats)) {
+            if (stat.name == name) {
+                if (stat.new_count + stat.learn_count + stat.review_count > 0)
+                    return true;
+            }
+        }
+        return false;
+    });
 
     const deck = decks[Math.floor(Math.random() * decks.length)];
     await chrome.runtime.sendMessage(

@@ -26,6 +26,21 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
             sendResponse(response.result);
         });
         return true;
+    } else if (msg.type == "DECK_STATS") {
+        fetch('http://127.0.0.1:8765', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                action: 'getDeckStats',
+                version: 6,
+                params: { decks: msg.decks }
+            })
+        }).then((response) => {
+            return response.json();
+        }).then((response) => {
+            sendResponse(response.result);
+        });
+        return true;
     } else if (msg.type == "CURRENT_CARD") {
         fetch('http://127.0.0.1:8765', {
             method: 'POST',
