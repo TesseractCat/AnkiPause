@@ -257,7 +257,11 @@
             let nameMap = ["Again", "Hard", "Good", "Easy"];
 
             let buttonElem = document.createElement("button");
-            buttonElem.innerHTML = `${nameMap[button - 1]} <span>${nextReview}</span>`;
+            buttonElem.innerText = `${nameMap[button - 1]} `;
+            let span = document.createElement("span");
+            span.innerText = nextReview;
+            buttonElem.appendChild(span);
+
             buttonElem.addEventListener("click", async () => {
                 await chrome.runtime.sendMessage({ type: "ANSWER_CARD", ease: button });
                 currentCardIdx += 1;
