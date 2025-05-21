@@ -67,7 +67,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             // Load decks
-            console.log(items.decks);
             for (let [k, v] of Object.entries(items.decks)) {
                 let deckElem = document.querySelector(`input[data-deck="${k}"]`);
                 if (deckElem) {
@@ -132,7 +131,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Load saved settings
         loadSettings();
     }).then((response) => {
-        console.log(response);
         let decks = response["result"];
         for (let deck of decks) {
             addDeckCheckbox(deck, false);
