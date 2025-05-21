@@ -56,8 +56,8 @@
     }
 
     #AnkiPause__Overlay div {
-        width:  min(350px, 80vw)  !important;
-        height: min(450px, 80vh)  !important;
+        width:  min(450px, 80vw)  !important;
+        height: min(550px, 80vh)  !important;
         background-color: red    !important;
         border-radius: 5px       !important;
         overflow: hidden         !important;
