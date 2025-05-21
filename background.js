@@ -88,5 +88,22 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
             })
         });
         return false;
+    } else if (msg.type === "GET_MEDIA") {
+        fetch('http://127.0.0.1:8765', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                action: 'retrieveMediaFile',
+                version: 6,
+                params: {
+                    filename: msg.filename
+                }
+            })
+        }).then((response) => {
+            return response.json();
+        }).then((response) => {
+            sendResponse(response.result);
+        });
+        return true;
     }
 });

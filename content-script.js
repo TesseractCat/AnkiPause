@@ -162,7 +162,7 @@
     let frame = document.createElement('iframe');
     containerElem.appendChild(frame);
 
-    function setFrameContent(content) {
+    async function setFrameContent(card, content) {
         let html = `
         <!DOCTYPE html>
         <head>
@@ -172,6 +172,19 @@
             ${content}
         </body>
         `;
+
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const images = doc.querySelectorAll('img');
+        for (let image of images) {
+            let filename = image.src.replace(/^.*[\\/]/, '')
+            let base64 = await chrome.runtime.sendMessage({ type: "GET_MEDIA", filename: image.src });
+            image.setAttribute('src', `data:image/${filename};base64,${base64}`);
+        }
+
+        html = doc.documentElement.outerHTML;
+        // console.log(html);
+
         const blob = new Blob([html], { type: 'text/html' });
         const url  = URL.createObjectURL(blob);
         frame.src = url;
@@ -184,7 +197,7 @@
     showAnswerButton.addEventListener("click", async () => {
         if (currentCard != null) {
             await chrome.runtime.sendMessage({ type: "SHOW_ANSWER" });
-            setFrameContent(currentCard.answer);
+            await setFrameContent(currentCard, currentCard.answer);
             overlayElem.classList.toggle("answer");
         }
     });
@@ -227,6 +240,7 @@
         );
         await chrome.runtime.sendMessage({ type: "SHOW_QUESTION" });
         currentCard = card;
+        // console.log(currentCard);
         if (currentCardIdx == 0 && card != null) {
             document.body.appendChild(overlayElem);
         } else if (card == null) {
@@ -235,7 +249,7 @@
             return;
         }
         
-        setFrameContent(currentCard.question);
+        await setFrameContent(currentCard, currentCard.question);
 
         let buttons = [];
         for (let buttonIdx = 0; buttonIdx < card.buttons.length; buttonIdx++) {
